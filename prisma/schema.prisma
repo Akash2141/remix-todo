@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NEW STUFF !!
+// ------------
+model User {
+  // We set an `id` variable
+  // - @id (because it's an ID)
+  // - @default(autoincrement()) (default value is auto-incremented)
+  id Int @id @default(autoincrement())
+
+  // - @unique (because we want the user to be unique
+  // based on the email - two users can't have the same)
+  email String @unique
+
+  username String
+
+  password String
+
+  // With a `Todo[]` type (one-to-many relationship)
+  // Because each user can have between 0 and an infinite number of todos
+  todos      Todo[]
+  userrating UserRating[]
+}
+
+model Todo {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+
+  // note about the bookmark
+  title String
+
+  status String @default("")
+
+  // It will link the `id` of the `User` model
+  userId Int
+
+  // We set a `user` variable
+  // With a `User` type (many-to-one relationship)
+
+  // 
+  // We link the `User` to a `Todo` based on:
+  // - the `userId` in the `Todo` model
+  // - the `id` in the `User` model
+  user       User         @relation(fields: [userId], references: [id])
+  categoryId Int?
+  category   Category?    @relation(fields: [categoryId], references: [id])
+  subtasks   Subtask[]
+  userrating UserRating[]
+}
+
+model Subtask {
+  id     String @id @default(uuid())
+  title  String
+  status String @default("in-progress")
+  todoId Int
+  todo   Todo   @relation(fields: [todoId], references: [id], onDelete: Cascade)
+}
+
+model UserRating {
+  id     String @id @default(uuid())
+  rating Float
+  todoId Int
+  userId Int
+  todo   Todo   @relation(fields: [todoId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, todoId])
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  title String
+  todos Todo[]
+}
