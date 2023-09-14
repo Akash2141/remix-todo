@@ -11,6 +11,7 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export async function loader(){
+  console.log("this is the loader::");
   const todos = await db.todo.findMany({
     include: {
       category: true,
@@ -62,7 +63,6 @@ export default function Index() {
   },[todos,state.view])
 
   function onDragStart(e,todo){
-    console.log("drag start todo::",todo)
     e.dataTransfer.setData("todo", JSON.stringify(todo));
   }
   
@@ -73,12 +73,8 @@ export default function Index() {
   function onDrop(e,todo_status){
     e.preventDefault();
     const todo=e.dataTransfer.getData("todo");
-    console.log(JSON.parse(todo),todo_status)
     setState((prev)=>{
-console.log("before,",prev.kanbanViewTodos[1][todo_status])
-
       prev.kanbanViewTodos[1][todo_status].push(JSON.parse(todo));
-console.log("prev,",prev.kanbanViewTodos[1][todo_status])
       return {...prev}
     })
   }
