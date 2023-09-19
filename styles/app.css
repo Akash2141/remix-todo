@@ -8,3 +8,9 @@
     flex-direction: row;
     justify-content: space-around;
 }
+
+.todo-status-parent{
+    border: 3px solid red;
+    min-height: 100px;
+    overflow: auto;
+}
